@@ -21,11 +21,10 @@ class DishDetail extends Component{
 
     renderComments(comments) {
         const comment=comments.map(desc=> {
-            const Date=(DATE) => { return DATE.substr(0, 10)};
             return(
                 <div key={desc.id} >
                     <li>{desc.comment}</li>
-                    <li> -- {desc.author} , {Date(desc.date)}</li>
+                    <li> -- {desc.author} , {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(desc.date)))}</li>
                     <br />
                 </div>
             );
@@ -54,13 +53,14 @@ class DishDetail extends Component{
 
         if (this.props.dish) {
             return (
-                <div className="row">
-                    <div className="col-12 col-md-5">
-                        {this.renderDish(this.props.dish)}
+                <div className="container">
+                    <div className="row">
+                        <div className="col-12 col-md-5">
+                            {this.renderDish(this.props.dish)}
+                        </div>
+                        {this.renderComments(this.props.dish.comments)}
                     </div>
-                    {this.renderComments(this.props.dish.comments)}
                 </div>
-
             );
         }else {
             return (<div></div>);

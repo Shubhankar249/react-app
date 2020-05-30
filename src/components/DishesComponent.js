@@ -1,6 +1,104 @@
-import React from "react";
-import {Card, CardImg, CardText, CardTitle, CardBody, Breadcrumb, BreadcrumbItem} from 'reactstrap';
+import React, {Component} from "react";
+import {
+    Card,
+    CardImg,
+    CardText,
+    CardTitle,
+    CardBody,
+    Breadcrumb,
+    BreadcrumbItem,
+    Button,
+    ModalHeader, ModalBody, Label, Modal, Row, Col
+} from 'reactstrap';
+import {Control, LocalForm, Errors} from "react-redux-form";
 import {Link} from "react-router-dom";
+
+const maxLength= (len) => (val)=> !(val) || val.length <= len;
+const minLength= (len) => (val)=> val && val.length >= len;
+
+class CommentForm extends Component{
+    constructor(props) {
+        super(props);
+        this.state={
+            isModalOpen:false
+        };
+
+        this.handleSubmit=this.handleSubmit.bind(this);
+        this.toggleModal=this.toggleModal.bind(this);
+    }
+
+    handleSubmit(values) {
+        console.log("Current state is : " + JSON.stringify(values));
+        alert("Current state is : " + JSON.stringify(values));
+        this.setState({isModalOpen:!this.state.isModalOpen});
+    }
+
+    toggleModal() {
+        this.setState({isModalOpen:!this.state.isModalOpen})
+    }
+
+    render() {
+        const items=[];
+
+        for (let i=1; i<7; i++) {
+            items.push(<option >{i}</option>)
+        }
+
+        return(
+            <div>
+            <Button onClick={this.toggleModal} className="bg-transparent text-secondary"><span className="fa fa-pencil"/> Submit Form</Button>
+                <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
+                    <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
+                    <ModalBody>
+                        <LocalForm onSubmit={(val)=> this.handleSubmit(val)}>
+                            <Row className="form-group">
+                                <Label md={4} htmlFor="rating">Rating</Label>
+                                <Col md={12}>
+                                    <Control.select model=".rating" name="rating" className="form-control">
+                                        {items}
+                                    </Control.select>
+                                </Col>
+                            </Row>
+
+                            <Row className="form-group">
+                                <Label md={4} htmlFor="authorname">Your Name</Label>
+                                <Col md={12}>
+                                    <Control.text model='.authorname' id="authorname" name="authorname" placeholder="Your name"
+                                             className="form-control" validators={{
+                                                 minLength:minLength(3), maxLength:maxLength(15)
+                                    }}/>
+                                    <Errors model=".authorname" className="text-danger" show="touched"
+                                            messages={{
+                                                minLength: 'Must be greater than 2 characters',
+                                                maxLength: 'Must be 15 characters or less'}}
+                                    />
+                                </Col>
+                            </Row>
+
+                            <Row className="form-group">
+                                <Label htmlFor="comment" md={4}>Comment</Label>
+                                <Col md={12}>
+                                    <Control.textarea model=".comment" id="comment" name="coment"
+                                                      rows="6" className="form-control"
+                                    />
+                                </Col>
+                            </Row>
+
+                            <Row className="form-group">
+                                <Col md={4}>
+                                    <Button type="submit" color="primary">
+                                        Send Feedback
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </LocalForm>
+                    </ModalBody>
+                </Modal>
+            </div>
+        );
+    }
+
+}
 
 function RenderDish({dish}) {
     return (
@@ -35,6 +133,7 @@ function RenderComments({comments}) {   // user defined components start with Ca
                         <ul className="col-12 list-unstyled">
                             {Comment}
                         </ul>
+                        <CommentForm />
                     </div>
                 </div>
             </div>

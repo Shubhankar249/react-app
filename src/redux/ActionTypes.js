@@ -1,0 +1,1 @@
+export const ADD_COMMENT='ADD_COMMENT'; // different action types that are identified by string constants

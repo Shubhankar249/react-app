@@ -40,7 +40,7 @@ class CommentForm extends Component{
     render() {
         const items=[];
 
-        for (let i=1; i<7; i++) {
+        for (let i=1; i<6; i++) {
             items.push(<option >{i}</option>)
         }
 

@@ -137,3 +137,72 @@ export const addPromos = (promos) => ({
     type: ActionTypes.ADD_PROMOS,
     payload: promos
 });
+
+export const fetchLeaders=()=>(dispatch)=> {
+    dispatch(leadersLoading(true));
+
+    return fetch(baseUrl+'leaders')
+        .then(response=> {
+            if (response.ok) return response;   // if server sends an appropriate response then return response for next promise to use.
+
+            // handling error
+            let err=new Error(`Error ${response.status} : ${response.statusText}`);
+            err.response=response;
+            throw err;
+
+        }, error=> {    // if server doesn't serve any response.
+            throw new Error(error.message);
+        })
+        .then(response=>response.json())
+        .then(leaders=>dispatch(addLeaders(leaders)))
+        .catch(err=> dispatch(leadersFailed(err.message)));
+};
+
+// Action creators
+export const leadersLoading=()=> ({  // returning action
+    type:ActionTypes.LEADERS_LOADING
+});
+
+export const leadersFailed=(err)=>({
+    type:ActionTypes.LEADERS_FAILED,
+    payload: err
+});
+
+export const addLeaders=(leaders)=>({
+    type:ActionTypes.ADD_LEADERS,
+    payload:leaders
+});
+
+export const postFeedback=(firstname, lastname, telnum, email, agree, contactType, message)=> (dispatch) =>{
+    const newFeedback = {
+        firstname: firstname,
+        lastname: lastname,
+        telnum: telnum,
+        email: email,
+        agree: agree,
+        contactType: contactType,
+        message: message
+    };
+    newFeedback.date= new Date().toISOString();
+
+    return fetch(baseUrl+'feedback', {
+        method:'POST',
+        body: JSON.stringify(newFeedback),
+        headers:{'Content-Type': 'application/json'},
+        credentials:'same-origin'
+    })
+        .then(response=> {
+            if (response.ok) return response;   // if server sends an appropriate response then return response for next promise to use.
+
+            // handling error
+            let err=new Error(`Error ${response.status} : ${response.statusText}`);
+            err.response=response;
+            throw err;
+
+        }, error=> {    // if server doesn't serve any response.
+            throw new Error(error.message);
+        })
+        .then(response=>response.json())
+        .then(feedback=> alert('Your feedback is : '+ JSON.stringify(feedback)))
+        .catch(err=> {alert('Post request failed!!\n Error:'+err.message)});
+};

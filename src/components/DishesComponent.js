@@ -10,6 +10,7 @@ import {
     Button,
     ModalHeader, ModalBody, Label, Modal, Row, Col
 } from 'reactstrap';
+import { FadeTransform, Fade, Stagger } from 'react-animation-components';
 import {Control, LocalForm, Errors} from "react-redux-form";
 import {Link} from "react-router-dom";
 import {Loading} from "./LoadingComponent";
@@ -104,13 +105,15 @@ class CommentForm extends Component{
 
 function RenderDish({dish}) {
     return (
-        <Card>
-            <CardImg width="100%" src={baseUrl+dish.image} alt={dish.name}/>
-            <CardBody>
-                <CardTitle><h3>{dish.name}</h3></CardTitle>
-                <CardText>{dish.description}</CardText>
-            </CardBody>
-        </Card>
+        <FadeTransform in transformProps={{exitTransform: 'scale(0.5) translateY(-50%)'}}>
+            <Card>
+                <CardImg width="100%" src={baseUrl+dish.image} alt={dish.name}/>
+                <CardBody>
+                    <CardTitle><h3>{dish.name}</h3></CardTitle>
+                    <CardText>{dish.description}</CardText>
+                </CardBody>
+            </Card>
+        </FadeTransform>
 
     );
 }
@@ -118,11 +121,13 @@ function RenderDish({dish}) {
 function RenderComments({comments, postComment, dishId}) {   // user defined components start with Caps
     const Comment=comments.map(desc=> {
         return(
-            <div key={desc.id} >
-                <li>{desc.comment}</li>
-                <li> -- {desc.author} , {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(desc.date)))}</li>
-                <br />
-            </div>
+            <Fade in>
+                <div key={desc.id} >
+                    <li>{desc.comment}</li>
+                    <li><i> -- {desc.author} , {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(desc.date)))}</i></li>
+                    <br />
+                </div>
+            </Fade>
         );
     });
 
@@ -133,7 +138,9 @@ function RenderComments({comments, postComment, dishId}) {   // user defined com
                     <div className="row">
                         <h3>Comments</h3>
                         <ul className="col-12 list-unstyled">
-                            {Comment}
+                            <Stagger in>
+                                {Comment}
+                            </Stagger>
                         </ul>
                         <CommentForm postComment={postComment} dishId={dishId}/>
                     </div>

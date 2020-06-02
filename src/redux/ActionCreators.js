@@ -3,15 +3,41 @@ import {baseUrl} from "../shared/baseUrl";
 
 
 // creating a action Creator function that creates an action object
-export const addComment=(dishId, rating, author, comment)=>({    //@params: that are required to add a comment
+export const addComment=(comment)=>({    //@params: that are required to add a comment
     type: ActionTypes.ADD_COMMENT,
-    payload: {
+    payload: comment
+});
+
+export const postComment=(dishId, rating, author, comment)=> (dispatch) =>{
+    const newComment = {
         dishId:dishId,
         rating: rating,
         author: author,
         comment: comment
-    }
-});
+    };
+    console.log("Trying to add a comment");
+    newComment.date= new Date().toISOString();
+    return fetch(baseUrl+'comments', {
+        method:'POST',
+        body: JSON.stringify(newComment),
+        headers:{'Content-Type': 'application/json'},
+        credentials:'same-origin'
+    })
+        .then(response=> {
+            if (response.ok) return response;   // if server sends an appropriate response then return response for next promise to use.
+
+            // handling error
+            let err=new Error(`Error ${response.status} : ${response.statusText}`);
+            err.response=response;
+            throw err;
+
+        }, error=> {    // if server doesn't serve any response.
+            throw new Error(error.message);
+        })
+        .then(response=>response.json())
+        .then(comment=> dispatch(addComment(comment)))
+        .catch(err=> {alert('Post request failed!!\n Error:'+err.message)});
+};
 
 // creating a thunk used for fetchingDishes which is a middleware function that returns a function
 export const fetchDishes=()=>(dispatch)=> {     // the inner middleware function can take params: dispatch, getState if required
@@ -27,7 +53,6 @@ export const fetchDishes=()=>(dispatch)=> {     // the inner middleware function
             throw err;
 
         }, error=> {    // if server doesn't serve any response.
-            console.log("error supplied");
             throw new Error(error.message);
         })
         .then(response=>response.json())

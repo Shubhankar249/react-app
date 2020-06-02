@@ -2,8 +2,6 @@ import * as ActionTypes from './ActionTypes';
 import {baseUrl} from "../shared/baseUrl";
 
 
-
-
 // creating a action Creator function that creates an action object
 export const addComment=(dishId, rating, author, comment)=>({    //@params: that are required to add a comment
     type: ActionTypes.ADD_COMMENT,
@@ -20,8 +18,21 @@ export const fetchDishes=()=>(dispatch)=> {     // the inner middleware function
     dispatch(dishesLoading(true));
 
     return fetch(baseUrl+'dishes')
+        .then(response=> {
+            if (response.ok) return response;   // if server sends an appropriate response then return response for next promise to use.
+
+            // handling error
+            let err=new Error(`Error ${response.status} : ${response.statusText}`);
+            err.response=response;
+            throw err;
+
+        }, error=> {    // if server doesn't serve any response.
+            console.log("error supplied");
+            throw new Error(error.message);
+        })
         .then(response=>response.json())
-        .then(dishes=>dispatch(addDishes(dishes)));
+        .then(dishes=>dispatch(addDishes(dishes)))
+        .catch(err=> dispatch(dishesFailed(err.message)));
 };
 
 // Action creators
@@ -41,8 +52,20 @@ export const addDishes=(dishes)=>({
 
 export const fetchComments = () => (dispatch) => {
     return fetch(baseUrl + 'comments')
+        .then(response=> {
+            if (response.ok) return response;   // if server sends an appropriate response then return response for next promise to use.
+
+            // handling error
+            let err=new Error(`Error ${response.status} : ${response.statusText}`);
+            err.response=response;
+            throw err;
+
+        }, error=> {    // if server doesn't serve any response.
+            throw new Error(error.message);
+        })
         .then(response => response.json())
-        .then(comments => dispatch(addComments(comments)));
+        .then(comments => dispatch(addComments(comments)))
+        .catch(err=> dispatch(commentsFailed(err.message)));
 };
 
 export const commentsFailed = (errmess) => ({
@@ -60,8 +83,20 @@ export const fetchPromos = () => (dispatch) => {
     dispatch(promosLoading());
 
     return fetch(baseUrl + 'promotions')
+        .then(response=> {
+            if (response.ok) return response;   // if server sends an appropriate response then return response for next promise to use.
+
+            // handling error
+            let err=new Error(`Error ${response.status} : ${response.statusText}`);
+            err.response=response;
+            throw err;
+
+        }, error=> {    // if server doesn't serve any response.
+            throw new Error(error.message);
+        })
         .then(response => response.json())
-        .then(promos => dispatch(addPromos(promos)));
+        .then(promos => dispatch(addPromos(promos)))
+        .catch(err=> dispatch(promosFailed(err.message)));
 };
 
 export const promosLoading = () => ({

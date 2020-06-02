@@ -5,15 +5,15 @@ import { baseUrl } from '../shared/baseUrl';
 import {promosFailed} from "../redux/ActionCreators";
 
 function RenderCard({item, isLoading, err}) {
-    if (isLoading) return  (<Loading/>);
-    if (err)    return (<h4>{err}</h4>);
-
-    return(
+    if (isLoading) return (<Loading/>);
+    if (err) return (<h4>{err}</h4>);
+    console.log(err+"error in home component");
+    return (
         <Card>
-            <CardImg src={baseUrl+item.image} alt={item.name} />
+            <CardImg src={baseUrl + item.image} alt={item.name}/>
             <CardBody>
                 <CardTitle>{item.name}</CardTitle>
-                {item.designation? <CardSubtitle>{item.designation}</CardSubtitle>: null}
+                {item.designation ? <CardSubtitle>{item.designation}</CardSubtitle> : null}
                 <CardText>{item.description}</CardText>
             </CardBody>
         </Card>
